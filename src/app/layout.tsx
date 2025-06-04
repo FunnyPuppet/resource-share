@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Navigation from "./components/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,17 +26,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100`}
       >
-        <nav className="flex justify-center gap-6 p-4 bg-gray-100">
-          <a href="/">首页</a>
-          <a href="/resource">资源分享</a>
-          <a href="/share">我要分享</a>
-          <a href="/help">资源帮找</a>
-          <a href="/about">关于本站</a>
-          <a href="/profile">个人中心</a>
-        </nav>
-        {children}
+        <Navigation />
+        <div className="pt-4 mx-auto w-full max-w-full md:max-w-[80%] xl:max-w-[60%]">
+          {children}
+        </div>
       </body>
     </html>
   );
