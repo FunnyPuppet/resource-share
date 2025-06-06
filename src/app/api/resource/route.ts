@@ -12,10 +12,15 @@ const resourceService = {
     const client = await pool.connect()
     try {
       const res = await client.query(
-        `SELECT * FROM resource_data ORDER BY update_date DESC LIMIT $1 OFFSET $2`,
+        `SELECT
+              *
+          FROM resource_data_all
+          ORDER BY update_date DESC
+          LIMIT $1 OFFSET $2
+          `,
         [limit, offset]
       )
-      const countRes = await client.query('SELECT COUNT(*) FROM resource_data')
+      const countRes = await client.query(`SELECT count(1) FROM resource_data_all`)
       return {
         data: res.rows,
         total: parseInt(countRes.rows[0].count),
@@ -57,7 +62,7 @@ async function handleGET(request: Request) {
   const { searchParams } = new URL(request.url)
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '10')
-  
+
   try {
     const result = await resourceService.getResources(page, limit)
     return NextResponse.json(result)

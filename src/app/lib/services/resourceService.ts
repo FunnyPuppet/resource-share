@@ -1,4 +1,4 @@
-interface Resource {
+export interface Resource {
   id: number
   title: string
   update_date: string

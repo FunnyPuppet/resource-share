@@ -2,19 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { getResources } from '../services/resourceService'
-
-interface Resource {
-  id: number
-  title: string
-  update_date: string
-  pan_category: string
-  resource_category: string
-  resource_tags: string
-  resource_link: string
-  resource_detail: string
-  pan_link: string
-}
+import { Resource, getResources } from '@/app/lib/services/resourceService'
 
 export default function ResourceShare() {
   const [resources, setResources] = useState<Resource[]>([])
@@ -25,19 +13,35 @@ export default function ResourceShare() {
   const limit = 10
 
   useEffect(() => {
+    let isMounted = true
     const fetchData = async () => {
       try {
         setLoading(true)
+        setError('')
         const { data, total } = await getResources(page, limit)
-        setResources(data)
-        setTotal(total)
+        if (isMounted) {
+          setResources(data)
+          setTotal(total)
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Unknown error')
+        }
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
-    fetchData()
+
+    const debounceTimer = setTimeout(() => {
+      fetchData()
+    }, 300)
+
+    return () => {
+      isMounted = false
+      clearTimeout(debounceTimer)
+    }
   }, [page, limit])
 
   return (
@@ -80,14 +84,6 @@ export default function ResourceShare() {
                     >
                       查看
                     </Link>
-                    <a 
-                      href={resource.pan_link} 
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                    >
-                      下载
-                    </a>
                   </td>
                 </tr>
               ))
