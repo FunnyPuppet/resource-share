@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Resource, getResources } from '@/app/lib/services/resourceService'
+import { Resource, getResources } from '@/app/lib/client/services/resourceService'
 
 export default function ResourceShare() {
   const [resources, setResources] = useState<Resource[]>([])
@@ -18,10 +18,10 @@ export default function ResourceShare() {
       try {
         setLoading(true)
         setError('')
-        const { data, total } = await getResources(page, limit)
+        const res = await getResources(page, limit)
         if (isMounted) {
-          setResources(data)
-          setTotal(total)
+          setResources(res.data?.data || [])
+          setTotal(res.data?.total || 0)
         }
       } catch (err) {
         if (isMounted) {
@@ -78,7 +78,7 @@ export default function ResourceShare() {
                   <td className="py-2 px-4 border">{resource.pan_category}</td>
                   <td className="py-2 px-4 border">{resource.resource_category}</td>
                   <td className="py-2 px-4 border">
-                    <Link 
+                    <Link
                       href={`/resource/${resource.id}`}
                       className="text-blue-500 hover:underline mr-2"
                     >
@@ -93,7 +93,7 @@ export default function ResourceShare() {
       </div>
 
       <div className="flex justify-between items-center mt-4">
-        <button 
+        <button
           onClick={() => setPage(p => Math.max(1, p - 1))}
           disabled={page === 1}
           className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
@@ -101,7 +101,7 @@ export default function ResourceShare() {
           上一页
         </button>
         <span>第 {page} 页 / 共 {Math.ceil(total / limit)} 页</span>
-        <button 
+        <button
           onClick={() => setPage(p => p + 1)}
           disabled={page >= Math.ceil(total / limit)}
           className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"

@@ -1,15 +1,14 @@
-// app/resource/[id]/page.tsx
 "use client"
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { Resource, getResourceById } from '@/app/lib/services/resourceService'
+import { Resource, getResourceById } from '@/app/lib/client/services/resourceService'
 
 export default function ResourceDetail() {
   const params = useParams()
   const id = Number(params.id)
 
-  const [resource, setResources] = useState<Resource>()
+  const [resource, setResources] = useState<Resource|null>()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -19,9 +18,9 @@ export default function ResourceDetail() {
       try {
         setLoading(true)
         setError('')
-        const data = await getResourceById(id)
+        const res = await getResourceById(id)
         if (isMounted) {
-          setResources(data)
+          setResources(res.data)
         }
       } catch (err) {
         if (isMounted) {
