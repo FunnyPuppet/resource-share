@@ -3,8 +3,11 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Resource, getResources } from '@/app/lib/client/services/resourceService'
+import { Category, getCategory } from '@/app/lib/client/services/categoryService'
 
 export default function ResourceShare() {
+  const [panCategorys, setPanCategorys] = useState<Category[]>([])
+  const [resourceCategorys, setResourceCategorys] = useState<Category[]>([])
   const [resources, setResources] = useState<Resource[]>([])
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
@@ -16,6 +19,11 @@ export default function ResourceShare() {
     let isMounted = true
     const fetchData = async () => {
       try {
+        const pcs = await getCategory("pan")
+        setPanCategorys(pcs.data || [])
+        const rcs = await getCategory("resource")
+        setResourceCategorys(rcs.data || [])
+
         setLoading(true)
         setError('')
         const res = await getResources(page, limit)
@@ -47,49 +55,54 @@ export default function ResourceShare() {
   return (
     <main className="p-4">
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="py-2 px-4 border">标题</th>
-              <th className="py-2 px-4 border">更新日期</th>
-              <th className="py-2 px-4 border">网盘类型</th>
-              <th className="py-2 px-4 border">资源类型</th>
-              <th className="py-2 px-4 border">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="py-4 text-center">加载中...</td>
-              </tr>
-            ) : error ? (
-              <tr>
-                <td colSpan={5} className="py-4 text-center text-red-500">{error}</td>
-              </tr>
-            ) : resources?.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-4 text-center">暂无数据</td>
-              </tr>
-            ) : (
-              resources.map((resource, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 border">{resource.title}</td>
-                  <td className="py-2 px-4 border">{new Date(resource.update_date).toLocaleDateString()}</td>
-                  <td className="py-2 px-4 border">{resource.pan_category}</td>
-                  <td className="py-2 px-4 border">{resource.resource_category}</td>
-                  <td className="py-2 px-4 border">
-                    <Link
-                      href={`/resource/${resource.id}`}
-                      className="text-blue-500 hover:underline mr-2"
-                    >
-                      查看
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <div className="mb-4 flex px-4">
+          <input
+            type="text"
+            placeholder="请输入关键词搜索"
+            className="w-full border border-gray-300 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+          <button className="min-w-[100px] bg-blue-500 text-white px-4 py-2 hover:bg-blue-600">搜索</button>
+        </div>
+        <div className="mb-4 flex px-4">
+          <div className="text-gray-700">网盘类型: </div>
+          {
+            panCategorys.map((category, index) => (
+              <div key={index} className="ml-4 hover:text-blue-300 text-gray-700">{category.name}</div>
+            ))
+          }
+        </div>
+        <div className="mb-4 flex px-4">
+          <div className="text-gray-700">资源类型: </div>
+          {
+            resourceCategorys.map((category, index) => (
+              <div key={index} className="ml-4 hover:text-blue-300 text-gray-700">{category.name}</div>
+            ))
+          }
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center text-center">
+            加载中...
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center text-center">
+            {error}
+          </div>
+        ) : resources?.length === 0 ? (
+          <div className="flex items-center justify-center text-center">
+            暂无数据
+          </div>
+        ) : (
+          resources.map((resource, index) => (
+            <div key={index} className="h-18 flex items-center border-b border-gray-100 px-4 hover:bg-gray-100 hover:shadow-lg transition cursor-pointer" onClick={() => { console.log(121); }}>
+              <div className='flex justify-center'>
+                <div className="bg-green-300 p-1 pl-2 pr-2 rounded text-white">{resource.pan_category}</div>
+                <div className="flex items-center justify-center text-center text-gray-500 text-lg ml-6">{new Date(resource.update_date).toLocaleDateString()}</div>
+                <div className="flex items-center justify-center text-center text-gray-500 text-lg ml-6" title={resource.title}>{resource.title}</div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       <div className="flex justify-between items-center mt-4">

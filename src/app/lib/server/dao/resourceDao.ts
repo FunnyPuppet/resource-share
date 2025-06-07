@@ -7,12 +7,13 @@ export async function getResources(page: number, limit: number) {
     const client = await pool.connect()
     try {
         const res = await client.query(
-            `SELECT
-              *
-          FROM resource_data_all
-          ORDER BY update_date DESC
-          LIMIT $1 OFFSET $2
-          `,
+            `
+            SELECT
+                *
+            FROM resource_data_all
+            ORDER BY update_date DESC
+            LIMIT $1 OFFSET $2
+            `,
             [limit, offset]
         )
         const countRes = await client.query(`SELECT count(1) FROM resource_data_all`)
