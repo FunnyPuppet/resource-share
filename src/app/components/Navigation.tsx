@@ -6,7 +6,7 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <>
+    <header>
       <nav className="bg-white w-full shadow-sm">
         <div className="flex justify-end items-center p-4 md:hidden">
           <button 
@@ -44,6 +44,6 @@ export default function Navigation() {
           <a href="/profile" className="py-2 px-4" onClick={() => setIsOpen(false)}>个人中心</a>
         </div>
       </div>
-    </>
+    </header>
   );
 }

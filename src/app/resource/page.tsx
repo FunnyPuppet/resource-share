@@ -1,11 +1,13 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import Pagination from '@/app/components/Pagination'
 import { Resource, getResources } from '@/app/lib/client/services/resourceService'
 import { Category, getCategory } from '@/app/lib/client/services/categoryService'
 
 export default function ResourceShare() {
+  const router = useRouter()
   const [panCategorys, setPanCategorys] = useState<Category[]>([])
   const [resourceCategorys, setResourceCategorys] = useState<Category[]>([])
   const [resources, setResources] = useState<Resource[]>([])
@@ -14,6 +16,10 @@ export default function ResourceShare() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const limit = 10
+
+  const goToDetail = (id: number | undefined) => {
+    router.push(`/resource/${id}`)
+  }
 
   useEffect(() => {
     let isMounted = true
@@ -53,74 +59,77 @@ export default function ResourceShare() {
   }, [page, limit])
 
   return (
-    <main className="p-4">
+    <main>
       <div className="overflow-x-auto">
-        <div className="mb-4 flex px-4">
-          <input
-            type="text"
-            placeholder="请输入关键词搜索"
-            className="w-full border border-gray-300 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
-          <button className="min-w-[100px] bg-blue-500 text-white px-4 py-2 hover:bg-blue-600">搜索</button>
-        </div>
-        <div className="mb-4 flex px-4">
-          <div className="text-gray-700">网盘类型: </div>
-          {
-            panCategorys.map((category, index) => (
-              <div key={index} className="ml-4 hover:text-blue-300 text-gray-700">{category.name}</div>
-            ))
-          }
-        </div>
-        <div className="mb-4 flex px-4">
-          <div className="text-gray-700">资源类型: </div>
-          {
-            resourceCategorys.map((category, index) => (
-              <div key={index} className="ml-4 hover:text-blue-300 text-gray-700">{category.name}</div>
-            ))
-          }
-        </div>
-
-        {loading ? (
-          <div className="flex items-center justify-center text-center">
-            加载中...
+        <div className='bg-white p-4'>
+          <div className="mb-4 flex px-4">
+            <input
+              type="text"
+              placeholder="请输入关键词搜索"
+              className="w-full border border-gray-300 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+            <button className="min-w-[100px] bg-blue-500 text-white px-4 py-2 hover:bg-blue-600">搜索</button>
           </div>
-        ) : error ? (
-          <div className="flex items-center justify-center text-center">
-            {error}
-          </div>
-        ) : resources?.length === 0 ? (
-          <div className="flex items-center justify-center text-center">
-            暂无数据
-          </div>
-        ) : (
-          resources.map((resource, index) => (
-            <div key={index} className="h-18 flex items-center border-b border-gray-100 px-4 hover:bg-gray-100 hover:shadow-lg transition cursor-pointer" onClick={() => { console.log(121); }}>
-              <div className='flex justify-center'>
-                <div className="bg-green-300 p-1 pl-2 pr-2 rounded text-white">{resource.pan_category}</div>
-                <div className="flex items-center justify-center text-center text-gray-500 text-lg ml-6">{new Date(resource.update_date).toLocaleDateString()}</div>
-                <div className="flex items-center justify-center text-center text-gray-500 text-lg ml-6" title={resource.title}>{resource.title}</div>
-              </div>
+          <div className="mb-4 flex px-4">
+            <div className="text-gray-700 min-w-[75px]">网盘类型: </div>
+            <div className="flex flex-wrap gap-4">
+              {
+                panCategorys.map((category, index) => (
+                  <div key={index} className="hover:text-blue-300 text-gray-700">{category.name}</div>
+                ))
+              }
             </div>
-          ))
-        )}
-      </div>
+          </div>
+          <div className="mb-4 flex px-4">
+            <div className="text-gray-700 min-w-[75px]">资源类型: </div>
+            <div className="flex flex-wrap gap-4">
+              {
+                resourceCategorys.map((category, index) => (
+                  <div key={index} className="hover:text-blue-300 text-gray-700">{category.name}</div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
 
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={() => setPage(p => Math.max(1, p - 1))}
-          disabled={page === 1}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-        >
-          上一页
-        </button>
-        <span>第 {page} 页 / 共 {Math.ceil(total / limit)} 页</span>
-        <button
-          onClick={() => setPage(p => p + 1)}
-          disabled={page >= Math.ceil(total / limit)}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-        >
-          下一页
-        </button>
+
+        <div className="flex mt-4 p-4 text-gray-700 bg-white">
+          当前数据(<span className="text-red-500">{total}</span>)条
+        </div>
+
+        <div className="bg-white mt-4 p-4">
+          {loading ? (
+            <div className="flex items-center justify-center text-center">
+              加载中...
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center text-center">
+              {error}
+            </div>
+          ) : resources?.length === 0 ? (
+            <div className="flex items-center justify-center text-center">
+              暂无数据
+            </div>
+          ) : (
+            resources.map((resource, index) => (
+              <div key={index} className="h-18 flex items-center border-b border-gray-100 px-4 hover:bg-gray-100 hover:shadow-lg transition cursor-pointer" onClick={() => { goToDetail(resource.id) }}>
+                <div className='flex justify-center'>
+                  <div className="bg-green-300 p-1 pl-2 pr-2 rounded text-white lg:flex hidden">{resource.pan_category}</div>
+                  <div className="flex items-center justify-center text-center text-gray-500 text-lg ml-6 lg:flex hidden">{new Date(resource.update_date).toLocaleDateString()}</div>
+                  <div className="text-left text-gray-500 text-lg ml-0 lg:ml-6 flex items-center justify-center text-center" title={resource.title}>{resource.title}</div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="bg-white p-4">
+          <Pagination
+            currentPage={page}
+            totalPages={Math.ceil(total / limit)}
+            onPageChange={(page) => setPage(page)}
+          />
+        </div>
       </div>
     </main>
   )

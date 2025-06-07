@@ -29,7 +29,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100`}
       >
         <Navigation />
-        <div className="mt-2 pt-4 mx-auto w-full max-w-full md:max-w-[80%] xl:max-w-[60%] bg-white">
+        <div className="mt-2 pt-4 mx-auto w-full max-w-full md:max-w-[80%] xl:max-w-[60%]">
           {children}
         </div>
       </body>
