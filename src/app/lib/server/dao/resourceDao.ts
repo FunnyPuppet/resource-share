@@ -8,15 +8,22 @@ export async function getResources(page: number, limit: number) {
     try {
         const res = await client.query(
             `
-            SELECT
-                *
-            FROM resource_data_all
-            ORDER BY update_date DESC
-            LIMIT $1 OFFSET $2
+            select data.id,
+                data.title,
+                data.resource_category,
+                data.update_date,
+                string_agg(DISTINCT dc.name, ',') AS pan_category
+            from (select id, title, resource_category, update_date
+                from resource_data
+                order by update_date desc
+                limit $1 offset $2) data
+                    left join pan_link pl on pl.resource_id = data.id
+                    left join disk_category dc on dc.code = pl.category_code
+            group by data.id, data.title, data.resource_category, data.update_date
             `,
             [limit, offset]
         )
-        const countRes = await client.query(`SELECT count(1) FROM resource_data_all`)
+        const countRes = await client.query(`select count(1) from resource_data`)
         return {
             data: res.rows,
             total: parseInt(countRes.rows[0].count),
@@ -32,7 +39,7 @@ export async function getResourceById(id: string | undefined) {
     const client = await pool.connect()
     try {
         const res = await client.query(
-            'SELECT * FROM resource_data_all WHERE id = $1',
+            'SELECT * FROM resource_data WHERE id = $1',
             [id]
         )
 

@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useState } from "react";
+import { useState } from "react"
 
 export default function Navigation() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <header>
@@ -20,7 +20,6 @@ export default function Navigation() {
         </div>
         <div className={`${isOpen ? 'block' : 'hidden'} md:flex md:justify-center md:gap-6 md:p-4`}>
           <a href="/" className="block py-2 px-4 md:py-0">首页</a>
-          <a href="/resource" className="block py-2 px-4 md:py-0">资源分享</a>
           <a href="/share" className="block py-2 px-4 md:py-0">我要分享</a>
           <a href="/help" className="block py-2 px-4 md:py-0">资源帮找</a>
           <a href="/about" className="block py-2 px-4 md:py-0">关于本站</a>
@@ -37,7 +36,6 @@ export default function Navigation() {
                       transition-transform duration-300 ease-in-out md:hidden`}>
         <div className="flex flex-col p-4 space-y-4">
           <a href="/" className="py-2 px-4" onClick={() => setIsOpen(false)}>首页</a>
-          <a href="/resource" className="py-2 px-4" onClick={() => setIsOpen(false)}>资源分享</a>
           <a href="/share" className="py-2 px-4" onClick={() => setIsOpen(false)}>我要分享</a>
           <a href="/help" className="py-2 px-4" onClick={() => setIsOpen(false)}>资源帮找</a>
           <a href="/about" className="py-2 px-4" onClick={() => setIsOpen(false)}>关于本站</a>
@@ -45,5 +43,5 @@ export default function Navigation() {
         </div>
       </div>
     </header>
-  );
+  )
 }
