@@ -19,9 +19,9 @@ interface PaginatedResources {
   limit: number
 }
 
-export async function getResources(page: number, limit: number) {
+export async function getResources(page: number, limit: number, dc: string, rc: string) {
   return await apiRequest<PaginatedResources>(
-    `/api/resources?page=${page}&limit=${limit}`,
+    `/api/resources?page=${page}&limit=${limit}&dc=${dc}&rc=${rc}`,
     'GET'
   )
 }

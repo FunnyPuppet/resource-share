@@ -16,23 +16,31 @@ export default function ResourceShare() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const limit = 10
+  const [keyword, setKeyword] = useState('')
+  const [dcc, setDcc] = useState("all")
+  const [rcc, setRcc] = useState("all")
 
   const goToDetail = (id: number | undefined) => {
     router.push(`/resource/${id}`)
   }
 
   useEffect(() => {
+    const fetchData = async () => {
+      const pcs = await getCategory("pan")
+      setPanCategorys(pcs.data || [])
+      const rcs = await getCategory("resource")
+      setResourceCategorys(rcs.data || [])
+    }
+    fetchData()
+  }, [])
+
+  useEffect(() => {
     let isMounted = true
     const fetchData = async () => {
       try {
-        const pcs = await getCategory("pan")
-        setPanCategorys(pcs.data || [])
-        const rcs = await getCategory("resource")
-        setResourceCategorys(rcs.data || [])
-
         setLoading(true)
         setError('')
-        const res = await getResources(page, limit)
+        const res = await getResources(page, limit, dcc, rcc)
         if (isMounted) {
           setResources(res.data?.data || [])
           setTotal(res.data?.total || 0)
@@ -56,7 +64,7 @@ export default function ResourceShare() {
       isMounted = false
       clearTimeout(debounceTimer)
     }
-  }, [page, limit])
+  }, [page, limit, dcc, rcc, keyword])
 
   return (
     <main>
@@ -74,9 +82,10 @@ export default function ResourceShare() {
             <div className="mb-4 flex px-4">
               <div className="text-gray-700 min-w-[75px]">网盘类型: </div>
               <div className="flex flex-wrap gap-4">
+                <div className={dcc == "all" ? "text-white bg-blue-300 px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setDcc("all"); setPage(1); }}>全部</div>
                 {
                   panCategorys.map((category, index) => (
-                    <div key={index} className="hover:text-blue-300 text-gray-700">{category.name}</div>
+                    <div key={index} className={dcc == category.code ? "text-white bg-blue-300 px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setDcc(category.code); setPage(1); }}>{category.name}</div>
                   ))
                 }
               </div>
@@ -84,9 +93,10 @@ export default function ResourceShare() {
             <div className="mb-4 flex px-4">
               <div className="text-gray-700 min-w-[75px]">资源类型: </div>
               <div className="flex flex-wrap gap-4">
+                <div className={rcc == "all" ? "text-white bg-blue-300 px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setRcc("all"); setPage(1); }}>全部</div>
                 {
                   resourceCategorys.map((category, index) => (
-                    <div key={index} className="hover:text-blue-300 text-gray-700">{category.name}</div>
+                    <div key={index} className={rcc == category.code ? "text-white bg-blue-300 px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setRcc(category.code); setPage(1); }}>{category.name}</div>
                   ))
                 }
               </div>

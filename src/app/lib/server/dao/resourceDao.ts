@@ -2,9 +2,12 @@
 
 import pool from '@/app/lib/server/db'
 
-export async function getResources(page: number, limit: number) {
+export async function getResources(page: number, limit: number, dc: string, rc: string) {
     const offset = (page - 1) * limit
     const client = await pool.connect()
+    let whereStr = ' where 1 = 1 '
+    if (dc != 'all') whereStr += ` and pl.category_code = '${dc}' `
+    if (rc != 'all') whereStr += ` and data.resource_category = '${rc}' `
     try {
         const res = await client.query(
             `
@@ -14,16 +17,29 @@ export async function getResources(page: number, limit: number) {
                 data.update_date,
                 string_agg(DISTINCT dc.name, ',') AS pan_category
             from (select id, title, resource_category, update_date
-                from resource_data
-                order by update_date desc
-                limit $1 offset $2) data
+                from resource_data) data
                     left join pan_link pl on pl.resource_id = data.id
                     left join disk_category dc on dc.code = pl.category_code
+            ${whereStr}
             group by data.id, data.title, data.resource_category, data.update_date
+            order by update_date desc
+            limit $1 offset $2
             `,
             [limit, offset]
         )
-        const countRes = await client.query(`select count(1) from resource_data`)
+        const countRes = await client.query(`
+            select count(1) from (select data.id,
+                data.title,
+                data.resource_category,
+                data.update_date,
+                string_agg(DISTINCT dc.name, ',') AS pan_category
+            from (select id, title, resource_category, update_date
+                from resource_data) data
+                    left join pan_link pl on pl.resource_id = data.id
+                    left join disk_category dc on dc.code = pl.category_code
+            ${whereStr}
+            group by data.id, data.title, data.resource_category, data.update_date)
+            `)
         return {
             data: res.rows,
             total: parseInt(countRes.rows[0].count),

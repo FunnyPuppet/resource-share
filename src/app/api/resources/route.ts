@@ -7,9 +7,11 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const page = parseInt(searchParams.get('page') || '1')
   const limit = parseInt(searchParams.get('limit') || '10')
+  const dc = searchParams.get('dc') || 'all'
+  const rc = searchParams.get('rc') || 'all'
 
   try {
-    const result = await getResources(page, limit)
+    const result = await getResources(page, limit, dc, rc)
     return NextResponse.json(result)
   } catch (err) {
     return NextResponse.json(
