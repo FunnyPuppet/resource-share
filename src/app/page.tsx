@@ -1,22 +1,24 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Pagination from '@/app/components/Pagination'
 import { Resource, getResources } from '@/app/lib/client/services/resourceService'
 import { Category, getCategory } from '@/app/lib/client/services/categoryService'
+import { Tag, getTags } from '@/app/lib/client/services/tagService'
 
 export default function ResourceShare() {
   const router = useRouter()
   const [panCategorys, setPanCategorys] = useState<Category[]>([])
   const [resourceCategorys, setResourceCategorys] = useState<Category[]>([])
   const [resources, setResources] = useState<Resource[]>([])
+  const [tags, setTags] = useState<Tag[]>([])
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const limit = 10
-  const [keyword, setKeyword] = useState('')
+  const keywordRef = useRef<HTMLInputElement>(null)
   const [dcc, setDcc] = useState("all")
   const [rcc, setRcc] = useState("all")
 
@@ -24,23 +26,14 @@ export default function ResourceShare() {
     router.push(`/resource/${id}`)
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const pcs = await getCategory("pan")
-      setPanCategorys(pcs.data || [])
-      const rcs = await getCategory("resource")
-      setResourceCategorys(rcs.data || [])
-    }
-    fetchData()
-  }, [])
-
-  useEffect(() => {
+  const searchData = () => {
     let isMounted = true
     const fetchData = async () => {
       try {
         setLoading(true)
         setError('')
-        const res = await getResources(page, limit, dcc, rcc)
+        const keyword = keywordRef.current?.value
+        const res = await getResources(page, limit, dcc, rcc, keyword)
         if (isMounted) {
           setResources(res.data?.data || [])
           setTotal(res.data?.total || 0)
@@ -64,7 +57,21 @@ export default function ResourceShare() {
       isMounted = false
       clearTimeout(debounceTimer)
     }
-  }, [page, limit, dcc, rcc, keyword])
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const pcs = await getCategory("pan")
+      setPanCategorys(pcs.data || [])
+      const rcs = await getCategory("resource")
+      setResourceCategorys(rcs.data || [])
+      const tags = await getTags()
+      setTags(tags.data || [])
+    }
+    fetchData()
+  }, [])
+
+  useEffect(searchData, [page, limit, dcc, rcc])
 
   return (
     <main>
@@ -74,10 +81,11 @@ export default function ResourceShare() {
             <div className="mb-4 flex px-4">
               <input
                 type="text"
+                ref={keywordRef}
                 placeholder="请输入关键词搜索"
                 className="w-full border border-gray-300 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
-              <button className="min-w-[100px] bg-blue-500 text-white px-4 py-2 hover:bg-blue-600">搜索</button>
+              <button className="min-w-[100px] bg-blue-500 text-white px-4 py-2 hover:bg-blue-600" onClick={() => { setPage(1); searchData(); }}>搜索</button>
             </div>
             <div className="mb-4 flex px-4">
               <div className="text-gray-700 min-w-[75px]">网盘类型: </div>
@@ -143,18 +151,32 @@ export default function ResourceShare() {
           </div>
         </div>
         <div className="hidden lg:flex flex-col gap-4 max-w-[260px]">
-          <div className="p-4 bg-white text-gray-700 flex flex-col gap-2">
+          <div className="p-2 bg-white text-gray-700 flex flex-col gap-2">
             <p className="border-b border-gray-300 py-1 font-bold">网站公告</p>
             <p className="text-sm">亲爱的用户，欢迎访问本资源分享平台！</p>
             <p className="text-sm">本网站致力于整理和分享优质的网盘资源，涵盖视频、音频、文档、软件等多个类型，供大家学习与交流使用</p>
           </div>
 
-          <div className="p-4 bg-white">
-            游戏 AI 视频
+          <div className="p-2 bg-white text-gray-700 flex flex-col gap-2">
+            <p className="border-b border-gray-300 py-1 font-bold">热门标签</p>
+            <div className="flex flex-wrap gap-2">
+              {
+                tags.map((tag, index) => (
+                  <div key={index} className="text-sm text-white px-1 bg-blue-300 rounded">{tag.name}</div>
+                ))
+              }
+            </div>
           </div>
 
-          <div className="p-4 bg-white">
-            热门
+          <div className="p-2 bg-white text-gray-700 flex flex-col gap-2">
+            <p className="border-b border-gray-300 py-1 font-bold">精品资源</p>
+            <div className="flex flex-col gap-2">
+              {
+                resources.map((resource, index) => (
+                  <div className="text-left text-gray-500 text-sm flex items-center" title={resource.title}>{resource.title}</div>
+                ))
+              }
+            </div>
           </div>
         </div>
       </div>

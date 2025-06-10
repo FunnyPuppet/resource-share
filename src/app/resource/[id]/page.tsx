@@ -54,9 +54,9 @@ export default function ResourceDetail() {
           <div className="p-4 text-red-500">{error}</div>
         ) : resource ? (
           <div className="p-4 bg-white">
-            <h1 className="text-2xl mb-4">{resource.title}</h1>
+            <div className="text-xl mb-2 ml-2 py-2 border-b border-gray-300">{resource.title}</div>
 
-            <div className="p-6">
+            <div className="p-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
                   <p>更新日期: {new Date(resource.update_date).toLocaleDateString()}</p>
