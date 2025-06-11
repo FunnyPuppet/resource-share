@@ -27,6 +27,14 @@ export async function getResources(page: number, limit: number, dc: string, rc: 
   )
 }
 
+export async function addResource(data: any) {
+  return await apiRequest<any>(
+    `/api/resources`,
+    'POST',
+    JSON.stringify(data)
+  )
+}
+
 export async function getResourceById(id: number) {
   return await apiRequest<Resource>(
     `/api/resources/${id}`,

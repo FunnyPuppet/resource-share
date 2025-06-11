@@ -14,3 +14,35 @@ export async function getTags() {
         client.release()
     }
 }
+
+export async function getTagIdByName(tags: string[]) {
+    const client = await pool.connect()
+    try {
+        const tagResult = await client.query(
+            `
+            select id from tag where name = any($1)
+            `,
+            [tags]
+        )
+
+        return tagResult.rows.map((row) => row.id)
+    } finally {
+        client.release()
+    }
+}
+
+export async function addTags(tags: string[]) {
+    const client = await pool.connect()
+    try {
+        await client.query(
+            `
+            insert into tag (name)
+            values ${tags.map((_, i) => `($${i + 1})`).join(',')}
+            on conflict (name) do nothing
+            `,
+            tags
+        )
+    } finally {
+        client.release()
+    }
+}
