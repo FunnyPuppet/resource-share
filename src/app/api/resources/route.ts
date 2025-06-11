@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   const reqData = JSON.parse(await request.json())
 
   try {
-    await addResource(reqData.title, reqData.resourceCategory, reqData.resourceDetail, reqData.tags, reqData.panLinks)
+    addResource(reqData.title, reqData.resourceCategory, reqData.resourceDetail, reqData.tags, reqData.panLinks)
 
     return NextResponse.json({status: 200})
   } catch (err) {

@@ -66,7 +66,7 @@ export default function ResourceDetail() {
 
               <div className="mb-6 py-2 border-b border-gray-300">
                 <h2 className="font-semibold mb-2">资源详情</h2>
-                <p className="text-gray-500">{resource.resource_detail}</p>
+                <p className="text-gray-500 whitespace-pre-line">{resource.resource_detail}</p>
               </div>
 
               <div className="space-x-4 flex flex-col gap-4">
