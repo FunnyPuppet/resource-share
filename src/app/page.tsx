@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Pagination from '@/app/components/Pagination'
+import { useSearchStore } from '@/app/lib/stores/searchStore'
 import { Resource, getResources } from '@/app/lib/client/services/resourceService'
 import { Category, getCategory } from '@/app/lib/client/services/categoryService'
 import { Tag, getTags } from '@/app/lib/client/services/tagService'
@@ -13,14 +14,14 @@ export default function ResourceShare() {
   const [resourceCategorys, setResourceCategorys] = useState<Category[]>([])
   const [resources, setResources] = useState<Resource[]>([])
   const [tags, setTags] = useState<Tag[]>([])
-  const [page, setPage] = useState(1)
+  const { page, setPage } = useSearchStore()
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const limit = 10
-  const keywordRef = useRef<HTMLInputElement>(null)
-  const [dcc, setDcc] = useState("all")
-  const [rcc, setRcc] = useState("all")
+  const { keyword, setKeyword } = useSearchStore()
+  const { dcc, setDcc } = useSearchStore()
+  const { rcc, setRcc } = useSearchStore()
 
   const goToDetail = (id: number | undefined) => {
     router.push(`/resource/${id}`)
@@ -32,7 +33,6 @@ export default function ResourceShare() {
       try {
         setLoading(true)
         setError('')
-        const keyword = keywordRef.current?.value
         const res = await getResources(page, limit, dcc, rcc, keyword)
         if (isMounted) {
           setResources(res.data?.data || [])
@@ -81,19 +81,20 @@ export default function ResourceShare() {
             <div className="mb-4 flex px-4">
               <input
                 type="text"
-                ref={keywordRef}
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
                 placeholder="请输入关键词搜索"
                 className="w-full border border-gray-300 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
-              <button className="min-w-[100px] bg-blue-500 text-white px-4 py-2 hover:bg-blue-600" onClick={() => { setPage(1); searchData(); }}>搜索</button>
+              <button className="min-w-[100px] bg-[#007bff] text-white px-4 py-2 hover:bg-blue-600" onClick={() => { setPage(1); searchData(); }}>搜索</button>
             </div>
             <div className="mb-4 flex px-4">
               <div className="text-gray-700 min-w-[75px]">网盘类型: </div>
               <div className="flex flex-wrap gap-4">
-                <div className={dcc == "all" ? "text-white bg-blue-300 px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setDcc("all"); setPage(1); }}>全部</div>
+                <div className={dcc == "all" ? "text-white bg-[#007bff] px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setDcc("all"); setPage(1); }}>全部</div>
                 {
                   panCategorys.map((category, index) => (
-                    <div key={index} className={dcc == category.code ? "text-white bg-blue-300 px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setDcc(category.code); setPage(1); }}>{category.name}</div>
+                    <div key={index} className={dcc == category.code ? "text-white bg-[#007bff] px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setDcc(category.code); setPage(1); }}>{category.name}</div>
                   ))
                 }
               </div>
@@ -101,10 +102,10 @@ export default function ResourceShare() {
             <div className="mb-4 flex px-4">
               <div className="text-gray-700 min-w-[75px]">资源类型: </div>
               <div className="flex flex-wrap gap-4">
-                <div className={rcc == "all" ? "text-white bg-blue-300 px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setRcc("all"); setPage(1); }}>全部</div>
+                <div className={rcc == "all" ? "text-white bg-[#007bff] px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setRcc("all"); setPage(1); }}>全部</div>
                 {
                   resourceCategorys.map((category, index) => (
-                    <div key={index} className={rcc == category.code ? "text-white bg-blue-300 px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setRcc(category.code); setPage(1); }}>{category.name}</div>
+                    <div key={index} className={rcc == category.code ? "text-white bg-[#007bff] px-2 rounded" : "hover:text-blue-300 text-gray-700"} onClick={() => { setRcc(category.code); setPage(1); }}>{category.name}</div>
                   ))
                 }
               </div>
@@ -162,7 +163,7 @@ export default function ResourceShare() {
             <div className="flex flex-wrap gap-2">
               {
                 tags.map((tag, index) => (
-                  <div key={index} className="text-sm text-white px-1 bg-blue-300 rounded">{tag.name}</div>
+                  <div key={index} className="px-2 py-1 bg-[#e5f2ff] text-[#007bff] text-sm rounded">{tag.name}</div>
                 ))
               }
             </div>
@@ -173,7 +174,7 @@ export default function ResourceShare() {
             <div className="flex flex-col gap-2">
               {
                 resources.map((resource, index) => (
-                  <div className="text-left text-gray-500 text-sm flex items-center" title={resource.title}>{resource.title}</div>
+                  <div key={index} className="text-left text-gray-500 text-sm flex items-center" title={resource.title}>{resource.title}</div>
                 ))
               }
             </div>

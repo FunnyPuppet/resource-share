@@ -57,32 +57,28 @@ export default function ResourceDetail() {
             <div className="text-xl mb-2 ml-2 py-2 border-b border-gray-300">{resource.title}</div>
 
             <div className="p-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <p>更新日期: {new Date(resource.update_date).toLocaleDateString()}</p>
-                  <p>网盘类型: {resource.pan_category}</p>
-                  <p>资源类型: {resource.resource_category}</p>
-                </div>
-                <div>
-                  <h2 className="font-semibold">标签</h2>
-                  <p>{resource.resource_tags}</p>
-                </div>
+              <div className="flex flex-col gap-2 mb-4">
+                <div className="text-gray-500">更新日期: {new Date(resource.update_date).toLocaleDateString()}</div>
+                <div className="text-gray-500">网盘类型: {resource.pan_category}</div>
+                <div className="text-gray-500">资源类型: {resource.resource_category}</div>
+                <div className="text-gray-500">标签：{resource.resource_tags}</div>
               </div>
 
-              <div className="mb-6">
-                <h2 className="font-semibold">资源详情</h2>
-                <p className="whitespace-pre-line">{resource.resource_detail}</p>
+              <div className="mb-6 py-2 border-b border-gray-300">
+                <h2 className="font-semibold mb-2">资源详情</h2>
+                <p className="text-gray-500">{resource.resource_detail}</p>
               </div>
 
               <div className="space-x-4 flex flex-col gap-4">
-                {resource.pan_link?.split(';').map((tag, idx) => (
+                {resource.pan_link?.split(';').map((link, idx) => (
                   <div className="flex items-start flex-col gap-2 lg:flex-row items-center" key={idx}>
                     <div>链接: </div>
                     <div
                       rel="noopener noreferrer"
                       className="px-2 py-1 bg-[#e5f2ff] text-[#007bff] text-sm rounded hover:underline"
+                      onClick={() => {window.open(link)}}
                     >
-                      {tag.trim()}
+                      {link.trim()}
                     </div>
                   </div>
                 ))}
