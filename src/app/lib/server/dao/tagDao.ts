@@ -6,7 +6,7 @@ export async function getTags() {
     const client = await pool.connect()
     try {
         const res = await client.query(
-            'select id, name from tag limit 50',
+            'select id, name from tag limit 30',
         )
 
         return res.rows
