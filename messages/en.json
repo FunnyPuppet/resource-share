@@ -1,0 +1,34 @@
+{
+  "Metadata": {
+    "lang": "en",
+    "title": "AI-Powered Data Processing and Analysis Agent",
+    "description": "DataForge is a website powered by AI agents, allowing users to process and analyze data using natural language without writing any code."
+  },
+  "Process": {
+    "submitBtn": "Submit",
+    "selectFileHint": "Select file",
+    "descriptionError": "Please enter your requirement description",
+    "fileError": "Please select file",
+    "taskSubmitMsg": "Task has been submitted",
+    "downloadFailMsg": "Download failed",
+    "resubmitBtn": "Resubmit",
+    "downloadFileBtn": "Download file"
+  },
+  "FAQ": {
+    "title": "FAQ",
+    "questions": {
+      "q1": "What is DataForge?",
+      "t1": "DataForge is an online data analysis platform based on AI agents. Users can complete data processing and analysis simply by using natural language.",
+      "q2": "Do I need to know how to code to use it?",
+      "t2": "No. DataForge is designed so that non-technical users can easily use it—just type your question.",
+      "q3": "What kind of data can DataForge handle?",
+      "t3": "Currently it only supports CSV and Excel. More data sources (such as databases and APIs) will be added in the future.",
+      "q4": "Are the analysis results reliable?",
+      "t4": "DataForge uses AI models for processing, so results may not always be accurate. You can export the data for secondary verification.",
+      "q5": "Do I need to install any software to use DataForge?",
+      "t5": "No, DataForge is a web-based application and only requires a browser.",
+      "q6": "Is DataForge free to use?",
+      "t6": "It is currently free, suitable for lightweight data analysis, with limitations on file size."
+    }
+  }
+}
