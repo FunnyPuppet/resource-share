@@ -46,11 +46,11 @@ export default function FilePickerWithConfirm() {
     };
   }, [taskId]);
 
-  const handleTextChange = (e) => {
+  const handleTextChange = (e: any) => {
     setText(e.target.value);
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: any) => {
     const file = e.target.files[0];
     if (file) {
       setFileName(file.name);
