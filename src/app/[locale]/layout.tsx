@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import {notFound} from 'next/navigation';
 import {Locale, hasLocale, NextIntlClientProvider} from 'next-intl';
 import {getTranslations, setRequestLocale} from 'next-intl/server';
@@ -12,8 +13,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata(
-  props: Omit<LayoutProps<'/[locale]'>, 'children'>
-) {
+  props: LayoutProps
+): Promise<Metadata> {
   const {locale} = await props.params;
 
   const t = await getTranslations({
