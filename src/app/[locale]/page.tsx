@@ -1,10 +1,9 @@
 import {Locale, useTranslations} from 'next-intl';
 import {setRequestLocale} from 'next-intl/server';
 import FilePickerWithConfirm from '@/components/SubmitTask';
-import {use} from 'react';
 
-export default function IndexPage({params}: PageProps<'/[locale]'>) {
-  const {locale} = use(params);
+export default function IndexPage(params: { locale: string }) {
+  const {locale} = params;
 
   // Enable static rendering
   setRequestLocale(locale as Locale);
