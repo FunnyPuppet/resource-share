@@ -14,7 +14,7 @@ export function generateStaticParams() {
 
 type LayoutProps = {
   children: React.ReactNode,
-  params: { locale: string }
+  params: Promise<any>
 }
 
 export async function generateMetadata(
