@@ -8,7 +8,7 @@ export default function FilePickerWithConfirm() {
   const t = useTranslations();
 
   const [fileName, setFileName] = useState<string | null>(null);
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [taskId, setTaskId] = useState<string | null>(null);
@@ -76,6 +76,26 @@ export default function FilePickerWithConfirm() {
       setError(t('Process.fileError'));
       return;
     }
+
+    const ext = file.name.split(".").pop()?.toLowerCase();
+
+    // 允许的文件类型
+    const allowedExts = ["csv", "xls", "xlsx"];
+
+    if (!ext || !allowedExts.includes(ext)) {
+      setError(t('Process.fileExtError'));
+      setFile(null);
+      setFileName(null);
+      return;
+    }
+
+    const fileSizeMB = file.size / (1024 * 1024);
+     // 限制为10MB
+    if (fileSizeMB > 10) {
+      setError(t('Process.fileSizeError'));
+      return;
+    }
+
     setProcessing(true);
     setMessage(t("Process.taskSubmitMsg"));
 

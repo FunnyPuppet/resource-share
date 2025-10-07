@@ -12,6 +12,8 @@ declare const messages: {
     "selectFileHint": "Select file",
     "descriptionError": "Please enter your requirement description",
     "fileError": "Please select file",
+    "fileExtError": "Unsupported file type. Please upload a CSV or Excel file!",
+    "fileSizeError": "The file size must not exceed 10MB.",
     "taskSubmitMsg": "Task has been submitted",
     "downloadFailMsg": "Download failed",
     "resubmitBtn": "Resubmit",
@@ -30,8 +32,21 @@ declare const messages: {
       "t4": "DataForge uses AI models for processing, so results may not always be accurate. You can export the data for secondary verification.",
       "q5": "Do I need to install any software to use DataForge?",
       "t5": "No, DataForge is a web-based application and only requires a browser.",
-      "q6": "Is DataForge free to use?",
-      "t6": "It is currently free, suitable for lightweight data analysis, with limitations on file size."
+      "q6": "Are multiple files or large files supported?",
+      "t6": "The current version supports a single file (≤10MB). Batch analysis will be available in future versions."
+    }
+  },
+  "HLS": {
+    "title": "Highlights",
+    "contents": {
+      "t1": "No programming skills required",
+      "c1": "Generate code directly from natural language.",
+      "t2": "Efficient execution",
+      "c2": "Automated analysis with instant results.",
+      "t3": "Privacy protection",
+      "c3": "Temporary files are isolated and automatically cleaned.",
+      "t4": "Anytime, anywhere",
+      "c4": "Operate directly in the browser, no software installation required."
     }
   }
 };
