@@ -14,7 +14,12 @@
     "taskSubmitMsg": "任务已提交",
     "downloadFailMsg": "下载失败",
     "resubmitBtn": "重新提交",
-    "downloadFileBtn": "下载文件"
+    "downloadFileBtn": "下载",
+    "startBtn": "开始",
+    "beginTitle": "时刻准备着。",
+    "fileType": {
+      "resource": "源文件"
+    }
   },
   "FAQ": {
     "title": "常见问题",
@@ -30,7 +35,7 @@
       "q5": "使用 DataForge 需要安装软件吗？",
       "t5": "不需要，DataForge 是一个基于网页的应用，只需浏览器即可使用。",
       "q6": "是否支持多文件或大文件？",
-      "t6": "当前版本支持单文件（≤10MB），未来版本将支持批量分析。"
+      "t6": "支持多文件上传，但是每个文件大小不能超过10MB。"
     }
   },
   "HLS": {

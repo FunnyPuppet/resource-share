@@ -14,7 +14,12 @@
     "taskSubmitMsg": "Task has been submitted",
     "downloadFailMsg": "Download failed",
     "resubmitBtn": "Resubmit",
-    "downloadFileBtn": "Download file"
+    "downloadFileBtn": "Download",
+    "startBtn": "Start",
+    "beginTitle": "Always ready.",
+    "fileType": {
+      "resource": "Source File"
+    }
   },
   "FAQ": {
     "title": "FAQ",
@@ -30,7 +35,7 @@
       "q5": "Do I need to install any software to use DataForge?",
       "t5": "No, DataForge is a web-based application and only requires a browser.",
       "q6": "Are multiple files or large files supported?",
-      "t6": "The current version supports a single file (≤10MB). Batch analysis will be available in future versions."
+      "t6": "Multiple files are supported, but each file must not exceed 10MB."
     }
   },
   "HLS": {
