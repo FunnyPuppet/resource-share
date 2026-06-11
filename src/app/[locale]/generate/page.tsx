@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { API_ENDPOINTS } from "@/app/constants/api";
 
 
-export default function generatePage() {
+export default function GeneratePage() {
     const t = useTranslations();
 
     const [fileNames, setFileNames] = useState<string[]>([]);
@@ -94,7 +94,6 @@ export default function generatePage() {
             const file = files[i];
             const ext = file.name.split(".").pop()?.toLowerCase();
 
-            // 允许的文件类型
             const allowedExts = ["csv", "xls", "xlsx"];
 
             if (!ext || !allowedExts.includes(ext)) {
@@ -105,7 +104,6 @@ export default function generatePage() {
             }
 
             const fileSizeMB = file.size / (1024 * 1024);
-            // 限制为10MB
             if (fileSizeMB > 10) {
                 setError(t('Process.fileSizeError'));
                 return;
@@ -115,7 +113,6 @@ export default function generatePage() {
         setProcessing(true);
         setMessage(t("Process.taskSubmitMsg"));
 
-        // 创建 FormData
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
             formData.append("files", files[i]);
@@ -123,7 +120,6 @@ export default function generatePage() {
         formData.append("lang", t("Metadata.lang"));
         formData.append("description", text);
 
-        // 上传到 API
         const res = await fetch(API_ENDPOINTS.WORKFLOW_INIT, {
             method: "POST",
             body: formData,
@@ -161,20 +157,15 @@ export default function generatePage() {
                 fileExt = "pdf";
             }
 
-            // 获取 blob
             const blob = await response.blob();
-
-            // 创建临时 URL
             const url = window.URL.createObjectURL(blob);
 
-            // 创建 a 标签下载
             const a = document.createElement('a');
             a.href = url;
             a.download = `${taskId}.${fileExt}`;
             document.body.appendChild(a);
             a.click();
 
-            // 清理
             a.remove();
             window.URL.revokeObjectURL(url);
         } catch (err) {
@@ -183,10 +174,10 @@ export default function generatePage() {
     }
 
     return (
-        <main>
-            <div className={clsx('flex justify-center w-full', {
+        <main className="relative z-10">
+            <div className={clsx('flex justify-center w-full px-4', {
                 'items-center': !(execStatus && execStatus == 'success'),
-                'h-screen': !(execStatus && execStatus == 'success')
+                'min-h-screen': !(execStatus && execStatus == 'success')
             })}>
                 <div className="w-full">
                     {processing ? (
@@ -194,15 +185,14 @@ export default function generatePage() {
                             {
                                 execStatus == 'success' ? (
                                     <div className='flex flex-col'>
-                                        <div className='text-center'>
-                                            <div className="max-w-3xl mx-auto min-h-10 max-h-20 p-6 flex flex-col gap-5 items-center justify-center">
-                                                {/* <p className="ml-2 text-gray-500 text-xl text-center">{message}</p> */}
-
-                                                <div className="flex gap-5 items-center justify-center">
+                                        {/* 成功状态 - 工具栏 */}
+                                        <div className='text-center mt-6 mb-4'>
+                                            <div className="max-w-3xl mx-auto p-4 sm:p-6 flex flex-col sm:flex-row gap-4 items-center justify-center rounded-2xl border border-cyan-500/20 bg-white/[0.03] backdrop-blur-xl">
+                                                <div className="flex gap-3 items-center justify-center flex-wrap">
                                                     <select
                                                         value={fileType}
                                                         onChange={(e) => setFileType(e.target.value)}
-                                                        className="px-2 py-1 bg-white text-gray-500 rounded-lg shadow-md text-center border border-gray-300 focus:outline-none"
+                                                        className="px-3 py-2 bg-gray-900 text-cyan-200 rounded-lg border border-cyan-500/30 text-sm focus:outline-none focus:border-cyan-400 focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] transition-all"
                                                     >
                                                         <option value="markdown">Markdown</option>
                                                         <option value="html">Html</option>
@@ -210,64 +200,126 @@ export default function generatePage() {
                                                         <option value="resource">{t('Process.fileType.resource')}</option>
                                                     </select>
 
-                                                    <button className="px-2 py-1 [background-color:#1a73e8] text-white rounded-lg shadow-md hover:[background-color:#1558b0] active:scale-95 transition" onClick={() => downloadFile()}>{t("Process.downloadFileBtn")}</button>
+                                                    <button
+                                                        className="btn-tech px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg shadow-[0_0_15px_rgba(0,240,255,0.2)] hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] active:scale-95 transition-all text-sm font-medium"
+                                                        onClick={() => downloadFile()}
+                                                    >
+                                                        {t("Process.downloadFileBtn")}
+                                                    </button>
 
-                                                    <button className="px-2 py-1 [background-color:#1a73e8] text-white rounded-lg shadow-md hover:[background-color:#1558b0] active:scale-95 transition" onClick={resetAll}>{t("Process.resubmitBtn")}</button>
+                                                    <button
+                                                        className="btn-tech px-4 py-2 bg-white/5 text-cyan-200 rounded-lg border border-cyan-500/30 hover:border-cyan-400 hover:bg-white/10 active:scale-95 transition-all text-sm font-medium"
+                                                        onClick={resetAll}
+                                                    >
+                                                        {t("Process.resubmitBtn")}
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className='flex justify-center'>
-                                            <iframe src={htmlURL} className="sm:w-[799px] max-w-full h-screen" />
+                                        {/* 预览区 */}
+                                        <div className='flex justify-center px-2'>
+                                            <div className="relative w-full max-w-[820px] rounded-2xl border border-cyan-500/20 overflow-hidden shadow-[0_0_30px_rgba(0,240,255,0.1)]">
+                                                {/* 预览区顶部装饰条 */}
+                                                <div className="flex items-center gap-2 px-4 py-2 bg-gray-900/80 border-b border-cyan-500/10">
+                                                    <div className="w-3 h-3 rounded-full bg-red-500/60"></div>
+                                                    <div className="w-3 h-3 rounded-full bg-yellow-500/60"></div>
+                                                    <div className="w-3 h-3 rounded-full bg-green-500/60"></div>
+                                                    {/* <span className="ml-3 text-xs text-blue-200/30">preview</span> */}
+                                                </div>
+                                                <div className="w-full h-screen bg-white p-5">
+                                                    <iframe src={htmlURL} className="w-full h-screen bg-white" />
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 ) : execStatus == 'error' ? (
-                                    <div className="max-w-3xl min-h-28 max-h-64 shadow-xl p-6 flex flex-col gap-5 items-center justify-center border border-gray-300 rounded-2xl mx-1 sm:mx-0">
-                                        <p className="ml-2 text-gray-500 text-xl text-center">{message}</p>
+                                    <div className="flex items-center justify-center min-h-[60vh]">
+                                        <div className="max-w-xl w-full p-8 flex flex-col gap-6 items-center justify-center rounded-2xl border border-red-500/20 bg-white/[0.03] backdrop-blur-xl mx-1 sm:mx-0">
+                                            {/* 错误图标 */}
+                                            <div className="w-16 h-16 flex items-center justify-center rounded-full bg-red-500/10 border border-red-500/30">
+                                                <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-red-300 text-lg text-center">{message}</p>
 
-                                        <button className="px-2 py-1 [background-color:#1a73e8] text-white rounded-lg shadow-md hover:[background-color:#1558b0] active:scale-95 transition" onClick={resetAll}>{t("Process.resubmitBtn")}</button>
+                                            <button
+                                                className="btn-tech px-6 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg shadow-[0_0_15px_rgba(0,240,255,0.2)] hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] active:scale-95 transition-all text-sm font-medium"
+                                                onClick={resetAll}
+                                            >
+                                                {t("Process.resubmitBtn")}
+                                            </button>
+                                        </div>
                                     </div>
                                 ) : (
-                                    <div className='mx-1 sm:mx-0'>
-                                        <div className="flex h-5 items-center justify-center space-x-2 mb-5">
-                                            <div className="w-3 h-3 bg-gray-300 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                                            <div className="w-3 h-3 bg-gray-300 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                                            <div className="w-3 h-3 bg-gray-300 rounded-full animate-bounce"></div>
-                                        </div>
+                                    /* 处理中状态 */
+                                    <div className='flex items-center justify-center min-h-[60vh] mx-1 sm:mx-0'>
+                                        <div className="max-w-xl w-full p-8 flex flex-col gap-8 items-center justify-center rounded-2xl border border-cyan-500/20 bg-white/[0.03] backdrop-blur-xl">
+                                            {/* 跳动点 - 霓虹色 */}
+                                            <div className="flex items-center justify-center space-x-3">
+                                                <div className="w-3 h-3 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s] shadow-[0_0_10px_rgba(0,240,255,0.6)]"></div>
+                                                <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s] shadow-[0_0_10px_rgba(59,130,246,0.6)]"></div>
+                                                <div className="w-3 h-3 bg-purple-400 rounded-full animate-bounce shadow-[0_0_10px_rgba(139,92,246,0.6)]"></div>
+                                            </div>
 
-                                        <div className="max-w-3xl mx-auto min-h-28 max-h-64 shadow-xl p-6 flex items-center justify-center border border-gray-300 rounded-2xl">
-                                            <div className="w-5 h-5 border-4 border-gray-300 border-t-gray-500 rounded-full animate-spin"></div>
-                                            <div className="ml-2 text-gray-500 text-xl">{message}</div>
+                                            {/* 旋转加载器 */}
+                                            <div className="w-16 h-16 border-[3px] border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin-glow"></div>
+
+                                            <p className="text-cyan-200/80 text-lg">{message}</p>
                                         </div>
                                     </div>
-
                                 )
                             }
                         </div>
                     ) : (
-                        <div className="max-w-3xl mx-auto p-1 sm:p-6">
-                            <div className="mb-6 text-center">
-                                <p className='text-2xl font-semibold text-gray-700'>{t('Process.beginTitle')}</p>
+                        /* 初始表单状态 */
+                        <div className="max-w-3xl mx-auto pt-6 sm:pt-16 pb-16">
+                            {/* 标题 */}
+                            <div className="mb-8 text-center">
+                                <p className='text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent'>
+                                    {t('Process.beginTitle')}
+                                </p>
+                                <div className="mt-3 h-px w-32 mx-auto bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
                             </div>
-                            <div className="rounded-2xl border border-gray-200 bg-white shadow-xl p-3 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                                <div className="flex flex-col">
-                                    <div className="grid grid-cols-3 gap-2">
+
+                            {/* 表单卡片 */}
+                            <div className="rounded-2xl border border-cyan-500/20 bg-white/[0.03] backdrop-blur-xl p-4 sm:p-6 transition-all duration-500 hover:border-cyan-400/40 hover:shadow-[0_0_30px_rgba(0,240,255,0.08)]">
+                                <div className="flex flex-col gap-4">
+                                    {/* 文件标签区 */}
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                         {fileNames && fileNames.length > 0 && (
                                             fileNames.map((name, index) => (
-                                                <div className="flex border rounded-lg px-2 py-1 border border-gray-200" key={index}>
-                                                    <span className="text-gray-700 block w-[20ch] truncate mr-2">{name}</span>
-                                                    <span onClick={() => cleanFile(name)}>x</span>
+                                                <div
+                                                    className="flex items-center justify-between rounded-lg px-3 py-1.5 bg-cyan-500/8 border border-cyan-500/30 text-sm group hover:border-cyan-400/60 transition-all"
+                                                    key={index}
+                                                >
+                                                    <span className="text-cyan-200 block w-[16ch] truncate">{name}</span>
+                                                    <span
+                                                        onClick={() => cleanFile(name)}
+                                                        className="ml-2 cursor-pointer text-cyan-400/50 hover:text-red-400 transition-colors font-mono text-lg leading-none"
+                                                    >
+                                                        ×
+                                                    </span>
                                                 </div>
                                             ))
                                         )}
                                     </div>
+
+                                    {/* 文本输入 */}
                                     <div>
-                                        <textarea className="w-full min-h-28 max-h-64 py-2 resize-none outline-none border-none focus:ring-0" onChange={handleTextChange}></textarea>
+                                        <textarea
+                                            className="w-full min-h-32 max-h-52 py-3 px-1 resize-none bg-transparent text-cyan-50 placeholder-blue-300/20 focus:outline-none text-base"
+                                            placeholder={t('Metadata.description')}
+                                            onChange={handleTextChange}
+                                        ></textarea>
                                     </div>
-                                    <div className="flex justify-between">
-                                        <div className="flex items-center text-3xl text-gray-500">
+
+                                    {/* 底部操作栏 */}
+                                    <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                                        <div className="flex items-center">
                                             <label
-                                                className="flex items-center justify-center"
+                                                className="flex items-center justify-center w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-2xl cursor-pointer hover:bg-cyan-500/20 hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(0,240,255,0.2)] transition-all font-light"
                                                 title={t('Process.selectFileHint')}
                                             >
                                                 +
@@ -280,15 +332,28 @@ export default function generatePage() {
                                                     onChange={handleFileChange}
                                                 />
                                             </label>
+                                            <span className="ml-3 text-blue-200/20 text-xs hidden sm:inline">
+                                                CSV, Excel (max 10MB)
+                                            </span>
                                         </div>
 
-                                        <button className="px-3 py-1 sm:py-2 [background-color:#1a73e8] text-white text-lg sm:text-xl rounded-lg shadow-md hover:[background-color:#1558b0] active:scale-95 transition" onClick={handleSubmit}>{t('Process.submitBtn')}</button>
+                                        <button
+                                            className="btn-tech px-6 py-2.5 bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 text-white text-base font-semibold rounded-lg shadow-[0_0_15px_rgba(0,240,255,0.2)] hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] active:scale-95 transition-all"
+                                            onClick={handleSubmit}
+                                        >
+                                            {t('Process.submitBtn')}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
+                            {/* 错误提示 */}
                             <div>
-                                {error && <p className="text-red-600 text-sm text-center mt-2">{error}</p>}
+                                {error && (
+                                    <div className="mt-4 p-3 rounded-lg bg-red-500/5 border border-red-500/20 text-center">
+                                        <p className="text-red-400 text-sm">{error}</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

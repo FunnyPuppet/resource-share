@@ -64,17 +64,9 @@ export default async function LocaleLayout({
           }}
         />
       </head>
-      <body className={clsx(inter.className, 'flex h-full flex-col')}>
+      <body className={clsx(inter.className, 'flex h-full flex-col bg-tech-grid bg-ambient-glow relative')}>
         <NextIntlClientProvider>
           {children}
-          {/* <footer className='flex justify-between items-center border-t border-gray-200 px-20 mt-10 py-5'>
-            <div>
-              © DataForge. All rights reserved.
-            </div>
-            <div>
-              <a href='/en' className='text-gray-500 hover:text-blue-300'>English</a> / <a href='/zh' className='text-gray-500 hover:text-blue-300'>中文</a>
-            </div>
-          </footer> */}
         </NextIntlClientProvider>
       </body>
     </html>
